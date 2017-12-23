@@ -1610,7 +1610,8 @@ class SchedulerJob(BaseJob):
             # Also save this task instance to the DB.
             self.logger.info("Creating / updating {} in ORM".format(ti))
             session.merge(ti)
-            session.commit()
+        # commit batch
+        session.commit()
 
         # Record import errors into the ORM
         try:
