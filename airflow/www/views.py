@@ -478,7 +478,9 @@ class Airflow(BaseView):
         ds = models.DagStat
         session = Session()
 
-        ds.update()
+        ds.update(
+            dag_ids=[dag.dag_id for dag in dagbag.dags.values() if not dag.is_subdag]
+        )
 
         qry = (
             session.query(ds.dag_id, ds.state, ds.count)
@@ -516,18 +518,20 @@ class Airflow(BaseView):
 
         LastDagRun = (
             session.query(DagRun.dag_id, sqla.func.max(DagRun.execution_date).label('execution_date'))
-            .join(Dag, Dag.dag_id == DagRun.dag_id)
-            .filter(DagRun.state != State.RUNNING)
-            .filter(Dag.is_active == True)
-            .group_by(DagRun.dag_id)
-            .subquery('last_dag_run')
+                .join(Dag, Dag.dag_id == DagRun.dag_id)
+                .filter(DagRun.state != State.RUNNING)
+                .filter(Dag.is_active == True)
+                .filter(Dag.is_subdag == False)
+                .group_by(DagRun.dag_id)
+                .subquery('last_dag_run')
         )
         RunningDagRun = (
             session.query(DagRun.dag_id, DagRun.execution_date)
-            .join(Dag, Dag.dag_id == DagRun.dag_id)
-            .filter(DagRun.state == State.RUNNING)
-            .filter(Dag.is_active == True)
-            .subquery('running_dag_run')
+                .join(Dag, Dag.dag_id == DagRun.dag_id)
+                .filter(DagRun.state == State.RUNNING)
+                .filter(Dag.is_active == True)
+                .filter(Dag.is_subdag == False)
+                .subquery('running_dag_run')
         )
 
         # Select all task_instances from active dag_runs.
