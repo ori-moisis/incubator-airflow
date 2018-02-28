@@ -1790,6 +1790,8 @@ class HomeView(AdminIndexView):
         do_filter = FILTER_BY_OWNER and (not current_user.is_superuser())
         owner_mode = conf.get('webserver', 'OWNER_MODE').strip().lower()
 
+        hide_orm_only_dags = conf.getboolean('webserver', 'hide_orm_only_dags_by_default')
+
         hide_paused_dags_by_default = conf.getboolean('webserver',
                                                       'hide_paused_dags_by_default')
         show_paused_arg = request.args.get('showPaused', 'None')
@@ -1798,6 +1800,7 @@ class HomeView(AdminIndexView):
 
         elif show_paused_arg.strip().lower() == 'true':
             hide_paused = False
+            hide_orm_only_dags = False
 
         else:
             hide_paused = hide_paused_dags_by_default
@@ -1868,7 +1871,10 @@ class HomeView(AdminIndexView):
                 for dag in unfiltered_webserver_dags
             }
 
-        all_dag_ids = sorted(set(orm_dags.keys()) | set(webserver_dags.keys()))
+        if hide_orm_only_dags:
+            all_dag_ids = sorted(set(webserver_dags.keys()))
+        else:
+            all_dag_ids = sorted(set(orm_dags.keys()) | set(webserver_dags.keys()))
         return self.render(
             'airflow/dags.html',
             webserver_dags=webserver_dags,

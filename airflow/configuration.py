@@ -276,6 +276,10 @@ log_fetch_timeout_sec = 5
 # DAGs by default
 hide_paused_dags_by_default = False
 
+# By default, the webserver shows DAGs that are not in the dag folder. Flip this to hide
+# DAGs that only exist in the metadata DB by default
+hide_orm_only_dags_by_default = False
+
 
 [email]
 email_backend = airflow.utils.email.send_email_smtp
@@ -491,6 +495,7 @@ web_server_port = 8080
 dag_orientation = LR
 log_fetch_timeout_sec = 5
 hide_paused_dags_by_default = False
+hide_orm_only_dags_by_default = False
 
 [email]
 email_backend = airflow.utils.email.send_email_smtp
