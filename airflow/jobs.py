@@ -553,6 +553,12 @@ class SchedulerJob(BaseJob):
             self.run_duration = conf.getint('scheduler',
                                             'run_duration')
 
+        # How many tasks can be queued in a single round, limit to maintain scheduling rounds short-ish
+        self.max_queue_per_round = conf.getint('scheduler', 'max_tasks_to_queue_per_round')
+        if self.max_queue_per_round == 0:
+            # 0 means unlimited
+            self.max_queue_per_round = None
+
     @provide_session
     def manage_slas(self, dag, session=None):
         """
@@ -1036,7 +1042,7 @@ class SchedulerJob(BaseJob):
             # DAG IDs with running tasks that equal the concurrency limit of the dag
             dag_id_to_possibly_running_task_count = {}
 
-            for task_instance in priority_sorted_task_instances:
+            for task_instance in priority_sorted_task_instances[:self.max_queue_per_round]:
                 if open_slots <= 0:
                     self.logger.info("No more slots free")
                     # Can't schedule any more since there are no more open slots.

@@ -407,6 +407,9 @@ max_threads = 2
 
 authenticate = False
 
+# Limit the number to tasks the scheduler will queue on each round
+max_tasks_to_queue_per_round = 0
+
 
 [mesos]
 # Mesos master address which MesosExecutor will connect to.
@@ -534,6 +537,7 @@ max_threads = 2
 catchup_by_default = True
 scheduler_zombie_task_threshold = 300
 dag_dir_list_interval = 0
+max_tasks_to_queue_per_round = 0
 """
 
 
