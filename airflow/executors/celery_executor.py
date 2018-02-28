@@ -16,6 +16,7 @@ from builtins import object
 import logging
 import subprocess
 import time
+import random
 
 from celery import Celery
 from celery import states as celery_states
@@ -32,6 +33,7 @@ airflow worker
 '''
 
 DEFAULT_QUEUE = configuration.get('celery', 'DEFAULT_QUEUE')
+MAX_TASKS_PER_SYNC = configuration.getint('celery', 'MAX_TASKS_PER_SYNC')
 
 
 class CeleryConfig(object):
@@ -89,9 +91,13 @@ class CeleryExecutor(BaseExecutor):
         self.last_state[key] = celery_states.PENDING
 
     def sync(self):
-
+        tasks_to_query = self.tasks.items()
+        if MAX_TASKS_PER_SYNC > 0:
+            # Randomize tasks to query to avoid having stuck tasks stop progress altogether
+            random.shuffle(tasks_to_query)
+            tasks_to_query = tasks_to_query[:MAX_TASKS_PER_SYNC]
         self.logger.debug(
-            "Inquiring about {} celery task(s)".format(len(self.tasks)))
+            "Inquiring about {}/{} celery task(s)".format(len(tasks_to_query), len(self.tasks)))
         for key, async in list(self.tasks.items()):
             state = async.state
             if self.last_state[key] != state:

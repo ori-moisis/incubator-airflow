@@ -352,6 +352,9 @@ flower_port = 5555
 # Default queue that tasks get assigned to and that worker listen on.
 default_queue = default
 
+# Maximum number of active tasks to query in each heartbeat, 0 is unlimited
+max_tasks_per_sync = 0
+
 
 [scheduler]
 # Task instances listen for external kill signal (when you clear tasks
@@ -521,6 +524,7 @@ without_mingle = false
 flower_host = 0.0.0.0
 flower_port = 5555
 default_queue = default
+max_tasks_per_sync = 0
 
 [scheduler]
 job_heartbeat_sec = 1
