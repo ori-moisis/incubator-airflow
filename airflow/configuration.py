@@ -276,6 +276,7 @@ log_fetch_timeout_sec = 5
 # DAGs by default
 hide_paused_dags_by_default = False
 
+
 [email]
 email_backend = airflow.utils.email.send_email_smtp
 
@@ -321,6 +322,21 @@ broker_url = sqla+mysql://airflow:airflow@localhost:3306/airflow
 
 # Another key Celery setting
 celery_result_backend = db+mysql://airflow:airflow@localhost:3306/airflow
+
+# The Celery broker heartbeat interval
+broker_heartbeat = 120
+
+# Connection pool size limit
+broker_pool_limit = 10
+
+# Whether celery should send events to allow monitoring
+send_events = true
+
+# Whether celery gossip protocol is disabled
+without_gossip = false
+
+# Whether celery mingle protocol is disabled
+without_mingle = false
 
 # Celery Flower is a sweet UI for Celery. Airflow has a shortcut to start
 # it `airflow flower`. This defines the IP that Celery Flower runs on
@@ -492,6 +508,11 @@ celeryd_concurrency = 16
 worker_log_server_port = 8793
 broker_url = sqla+mysql://airflow:airflow@localhost:3306/airflow
 celery_result_backend = db+mysql://airflow:airflow@localhost:3306/airflow
+broker_heartbeat = 120
+broker_pool_limit = 10
+send_events = true
+without_gossip = false
+without_mingle = false
 flower_host = 0.0.0.0
 flower_port = 5555
 default_queue = default

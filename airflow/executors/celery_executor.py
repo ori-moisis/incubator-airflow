@@ -46,6 +46,11 @@ class CeleryConfig(object):
     CELERYD_CONCURRENCY = configuration.getint('celery', 'CELERYD_CONCURRENCY')
     CELERY_DEFAULT_QUEUE = DEFAULT_QUEUE
     CELERY_DEFAULT_EXCHANGE = DEFAULT_QUEUE
+    CELERYD_SEND_EVENTS = configuration.getboolean('celery', 'SEND_EVENTS')
+    BROKER_HEARTBEAT = configuration.getint('celery', 'BROKER_HEARTBEAT')
+    if not BROKER_HEARTBEAT:
+        BROKER_HEARTBEAT = None
+    BROKER_POOL_LIMIT = configuration.getint('celery', 'BROKER_POOL_LIMIT')
 
 app = Celery(
     configuration.get('celery', 'CELERY_APP_NAME'),

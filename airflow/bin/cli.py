@@ -915,6 +915,8 @@ def worker(args):
         'O': 'fair',
         'queues': args.queues,
         'concurrency': args.concurrency,
+        'without_gossip': conf.getboolean('celery', 'WITHOUT_GOSSIP'),
+        'without_mingle': conf.getboolean('celery', 'WITHOUT_MINGLE'),
     }
 
     if args.daemon:
