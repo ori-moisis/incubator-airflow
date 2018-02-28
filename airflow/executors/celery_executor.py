@@ -82,6 +82,8 @@ class CeleryExecutor(BaseExecutor):
     def start(self):
         self.tasks = {}
         self.last_state = {}
+        # Hack to enable sqlalchemy to re-use connections
+        app.backend.ResultSession.im_func.func_defaults[0]._after_fork()
 
     def execute_async(self, key, command, queue=DEFAULT_QUEUE):
         self.logger.info( "[celery] queuing {key} through celery, "
