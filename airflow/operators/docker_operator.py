@@ -166,9 +166,9 @@ class DockerOperator(BaseOperator):
                     cpu_shares=cpu_shares,
                     environment=self.environment,
                     host_config=self.cli.create_host_config(binds=self.volumes,
-                                                            network_mode=self.network_mode),
+                                                            network_mode=self.network_mode,
+                                                            mem_limit=self.mem_limit),
                     image=image,
-                    mem_limit=self.mem_limit,
                     user=self.user
             )
             self.cli.start(self.container['Id'])
