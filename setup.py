@@ -18,7 +18,7 @@ from setuptools.command.test import test as TestCommand
 import imp
 import logging
 import os
-import pip
+import pkg_resources
 import sys
 
 logger = logging.getLogger(__name__)
@@ -102,7 +102,7 @@ def write_version(filename=os.path.join(*['airflow',
 
 def check_previous():
     installed_packages = ([package.project_name for package
-                           in pip.get_installed_distributions()])
+                           in pkg_resources.working_set])
     if 'airflow' in installed_packages:
         print("An earlier non-apache version of Airflow was installed, "
               "please uninstall it first. Then reinstall.")
