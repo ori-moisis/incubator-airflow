@@ -70,6 +70,7 @@ class DockerOperator(BaseOperator):
     :type user: int or str
     :param volumes: List of volumes to mount into the container, e.g.
         ``['/host/path:/container/path', '/host/path2:/container/path2:ro']``.
+    :param port_bindings: Dictionary of ports to open and map
     :param xcom_push: Does the stdout will be pushed to the next step using XCom.
            The default is False.
     :type xcom_push: bool
@@ -99,6 +100,7 @@ class DockerOperator(BaseOperator):
             tmp_dir='/tmp/airflow',
             user=None,
             volumes=None,
+            port_bindings=None,
             xcom_push=False,
             xcom_all=False,
             *args,
@@ -122,6 +124,7 @@ class DockerOperator(BaseOperator):
         self.tmp_dir = tmp_dir
         self.user = user
         self.volumes = volumes or []
+        self.port_bindings = port_bindings
         self.xcom_push = xcom_push
         self.xcom_all = xcom_all
 
@@ -161,14 +164,18 @@ class DockerOperator(BaseOperator):
             self.environment['AIRFLOW_TMP_DIR'] = self.tmp_dir
             self.volumes.append('{0}:{1}'.format(host_tmp_dir, self.tmp_dir))
 
+            ports = None if not self.port_bindings else self.port_bindings.keys()
+
             self.container = self.cli.create_container(
                     command=self.get_command(),
                     cpu_shares=cpu_shares,
                     environment=self.environment,
                     host_config=self.cli.create_host_config(binds=self.volumes,
                                                             network_mode=self.network_mode,
-                                                            mem_limit=self.mem_limit),
+                                                            mem_limit=self.mem_limit,
+                                                            port_bindings=self.port_bindings),
                     image=image,
+                    ports=ports,
                     user=self.user
             )
             self.cli.start(self.container['Id'])
